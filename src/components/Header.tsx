@@ -1,0 +1,48 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+
+export function Header() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.clear();
+      localStorage.clear();
+      router.push("/login");
+    }
+  };
+
+  return (
+    <header className="flex items-center justify-between px-4 py-4 border-b border-[#6739B7] bg-[#020710] w-full h-[12vh]">
+      <div className="flex items-center gap-3 ml-4 h-[12vh]">
+        <span
+          className="text-2xl font-semibold inline-block font-[Ranchers]"
+          style={{
+            fontSize: "24px",
+            background: "linear-gradient(90deg, #9B6CFF 0%, #DBBBFF 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            color: "transparent",
+          }}
+        >
+          ONE TAP
+        </span>
+        <span>
+          <img src="/onetap-logo.svg" width={"32px"} alt="" />
+        </span>
+      </div>
+      <div className="flex items-center space-x-2 mr-4 md:space-x-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleLogout}
+          style={{ color: "white", backgroundColor: "#1A1A1A" }}
+        >
+          Logout
+        </Button>
+      </div>
+    </header>
+  );
+}
