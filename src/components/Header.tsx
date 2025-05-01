@@ -2,15 +2,20 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-
+import signOut from "@/utils/supabase/logout";
 export function Header() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.clear();
-      localStorage.clear();
-      router.push("/login");
+    try {
+      await signOut();
+      if (typeof window !== "undefined") {
+        sessionStorage.clear();
+        localStorage.clear();
+        router.push("/login");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
     }
   };
 
