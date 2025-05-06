@@ -1,10 +1,9 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { backendUrl } from "@/utils/backend/backendUrl";
 import axios from "axios";
 
-export async function POST(request: Request) {
+export async function GET() {
   try {
     // 🔐 Extract the authenticated user using Supabase session
     const supabase = await createClient();
@@ -17,19 +16,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get request body - pass the entire userData object
-    const body = await request.json();
-    const profileName = body.profileName;
-
-    // Call backend API to update user info
-    const response = await axios.post(
-      `${backendUrl}/user/profile-data/${body.Auth}`,
-      { data: { profileName: profileName } }
+    // Make request to backend API
+    const response = await axios.get(
+      `${backendUrl}/subscriptions/get-subscriptions`
     );
 
     return NextResponse.json(response.data);
   } catch (error) {
-    console.error("Error updating user info:", error);
+    console.error("Error fetching subscriptions:", error);
 
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 403) {
