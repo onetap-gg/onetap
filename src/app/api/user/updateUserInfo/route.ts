@@ -3,17 +3,17 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { backendUrl } from "@/utils/backend/backendUrl";
 import axios from "axios";
-import { useParams } from "next/navigation";
 
 export async function POST(request: Request) {
   try {
     // Get request body - pass the entire userData object
-    const { authId, userData } = await request.json();
+    const body = await request.json();
+    const profileName = body.profileName;
 
     // Call backend API to update user info
-    const response = await axios.patch(
-      `${backendUrl}/basic-info/${authId}`,
-      userData
+    const response = await axios.post(
+      `${backendUrl}/user/profile-data/${body.Auth}`,
+      { data: { profileName: profileName } }
     );
 
     return NextResponse.json(response.data);

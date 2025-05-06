@@ -5,8 +5,7 @@ import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/Header";
 import { Inter } from "next/font/google";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { Toaster } from "sonner";
 import { UserProvider } from "@/context/user";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -20,6 +19,7 @@ export default function RootLayout({
     <AuthProvider>
       <html lang="en">
         <body className={inter.className}>
+          <Toaster />
           <div className=" h-screen bg-gray-100 lg:flex-row">
             {/* {user && <Header />} */}
             <Header />

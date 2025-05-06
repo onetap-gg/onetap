@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Edit } from "lucide-react";
 import { useUser } from "@/context/user";
+import { toast } from "sonner";
 
 const Profile = () => {
   const [name, setName] = useState("");
@@ -56,7 +57,6 @@ const Profile = () => {
       setSaveError("");
       setSaveSuccess(false);
 
-      // Send the entire userData object with updated values
       const updatedUserData = {
         ...userData,
         profileName: name,
@@ -76,15 +76,11 @@ const Profile = () => {
       }
 
       const updatedData = await response.json();
-
-      // Update the context with the new data
       setUserData(updatedData);
-
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      toast.success("Profile updated successfully!");
     } catch (err: any) {
       console.error("Error updating profile:", err);
-      setSaveError(err.message || "Failed to update profile");
+      toast.error(err.message || "Failed to update profile");
     } finally {
       setIsSaving(false);
     }
@@ -96,14 +92,13 @@ const Profile = () => {
       setPasswordError("");
       setPasswordSuccess(false);
 
-      // Basic validation
       if (!password || !confirmPassword) {
-        setPasswordError("Both password fields are required");
+        toast.error("Both password fields are required");
         return;
       }
 
       if (password !== confirmPassword) {
-        setPasswordError("Passwords do not match");
+        toast.error("Passwords do not match");
         return;
       }
 
@@ -123,15 +118,12 @@ const Profile = () => {
         throw new Error(errorData.error || "Failed to update password");
       }
 
-      // Clear password fields
       setPassword("");
       setConfirmPassword("");
-
-      setPasswordSuccess(true);
-      setTimeout(() => setPasswordSuccess(false), 3000);
+      toast.success("Password updated successfully!");
     } catch (err: any) {
       console.error("Error updating password:", err);
-      setPasswordError(err.message || "Failed to update password");
+      toast.error(err.message || "Failed to update password");
     } finally {
       setIsChangingPassword(false);
     }
@@ -401,30 +393,6 @@ const Profile = () => {
             </div>
           </div>
         </div>
-
-        {saveError && (
-          <div className="mt-4 p-2 bg-red-500 text-white rounded">
-            {saveError}
-          </div>
-        )}
-
-        {saveSuccess && (
-          <div className="mt-4 p-2 bg-green-500 text-white rounded">
-            Profile updated successfully!
-          </div>
-        )}
-
-        {passwordError && (
-          <div className="mt-4 p-2 bg-red-500 text-white rounded">
-            {passwordError}
-          </div>
-        )}
-
-        {passwordSuccess && (
-          <div className="mt-4 p-2 bg-green-500 text-white rounded">
-            Password updated successfully!
-          </div>
-        )}
 
         <div className="mt-10 flex gap-8">
           <Button
