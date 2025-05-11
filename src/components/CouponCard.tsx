@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { useState } from "react";
@@ -27,7 +32,7 @@ export const CouponCard = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="rounded bg-[#222222] min-w-[20rem] h-[40vh] flex flex-col justify-between">
+    <div className="rounded bg-[#222222] w-[15rem] min-h-[40vh] flex flex-col justify-between">
       <div className="flex">
         <div className="p-2">
           <img className="" src={`/images/${gameId}.png`} alt="" />
@@ -55,7 +60,7 @@ export const CouponCard = ({
             />
           </div>
 
-          <h2
+          <DialogTitle
             className="sm:text-[20px] font-bold mt-1 text-center sm:text-left"
             style={{
               fontFamily: "Impact",
@@ -64,7 +69,7 @@ export const CouponCard = ({
             }}
           >
             {name}
-          </h2>
+          </DialogTitle>
 
           <div className="flex flex-wrap items-center justify-center sm:justify-start mt-0 text-center sm:text-left">
             <span
