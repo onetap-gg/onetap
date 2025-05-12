@@ -1,15 +1,6 @@
 "use client";
 import { CouponCard } from "@/components/CouponCard";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { useUser } from "@/context/user";
-import Image from "next/image";
 import { useState, useEffect } from "react";
 
 interface CouponData {
@@ -70,7 +61,7 @@ export default function Marketplace() {
 
     fetchUserInfo();
     fetchCoupons();
-  }, []);
+  }, [setUserData]);
 
   const filteredCoupons = () => {
     if (filter === 0) return coupons;

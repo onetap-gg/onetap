@@ -1,4 +1,3 @@
-import { SubscriptionData } from "@/lib/types";
 import { Check } from "lucide-react";
 import { HiSparkles } from "react-icons/hi";
 
@@ -15,7 +14,6 @@ interface SubscriptionCardProps {
 }
 
 const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
-  id,
   tier,
   cost,
   benefits,

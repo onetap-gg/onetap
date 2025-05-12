@@ -19,19 +19,15 @@ interface InventoryItem {
   Item: {
     itemName: string;
     itemType: string;
-    itemValue: any;
+    itemValue: string[];
     itemImage?: string;
     gameId: number;
-    extraDetails: {
-      description: string;
-      points_to_redeem: number;
-    };
+    extraDetails: string;
   };
 }
 
 export const InventoryCard = (item: InventoryItem) => {
   const [activeTab, setActiveTab] = useState("description");
-  const defaultImage = "/placeholder-image.png"; // Add a default image path
 
   return (
     <div key={item.id} className="bg-[#222222] p-4 rounded-lg shadow-lg">
@@ -69,7 +65,7 @@ export const InventoryCard = (item: InventoryItem) => {
             <img
               src={`/images/${item.Item.gameId}.png`}
               alt={item.Item.itemName}
-              className="max-w-[250px] max-h-[250px]"
+              className="max-h-[150px]"
             />
           </div>
 
@@ -131,13 +127,13 @@ export const InventoryCard = (item: InventoryItem) => {
             <p
               className="text-gray-300 mt-0 text-center sm:text-left"
               style={{
-                fontFamily: "Poppins",
+                fontFamily: "sans-serif",
                 fontWeight: "100",
                 fontSize: "16px",
                 color: "#C6C6C6",
               }}
             >
-              {item.Item.extraDetails.description}
+              {JSON.parse(item.Item.extraDetails).description}
             </p>
           )}
           {activeTab === "how-to-redeem" && (

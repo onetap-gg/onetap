@@ -15,11 +15,7 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState("");
-  const [saveSuccess, setSaveSuccess] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
-  const [passwordSuccess, setPasswordSuccess] = useState(false);
   const { userData, setUserData } = useUser();
 
   useEffect(() => {
@@ -54,8 +50,6 @@ const Profile = () => {
   const handleSaveChanges = async () => {
     try {
       setIsSaving(true);
-      setSaveError("");
-      setSaveSuccess(false);
 
       const updatedUserData = {
         ...userData,
@@ -89,8 +83,6 @@ const Profile = () => {
   const handleChangePassword = async () => {
     try {
       setIsChangingPassword(true);
-      setPasswordError("");
-      setPasswordSuccess(false);
 
       if (!password || !confirmPassword) {
         toast.error("Both password fields are required");
