@@ -152,8 +152,10 @@ export default function SupportPage() {
         >
           <p className="mb-1">Email us for any other assistance</p>
           <a
-            href="mailto:support@onetap.com"
+            href={`https://mail.google.com/mail/?view=cm&to=onetapp167@gmail.com&su=${subject}&body=${topic}: ${message}&`}
             className="text-[#A084E8] underline"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Drop a mail
           </a>
