@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   BookOpenIcon,
   Headset,
@@ -13,25 +14,26 @@ import { GoHome } from "react-icons/go";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { name: "Profile", href: "/profile", icon: GoHome, active: true },
+  { name: "Profile", href: "/", icon: GoHome },
   {
     name: "Subscription",
     href: "/subscription",
     icon: BookOpenIcon,
-    active: false,
   },
   {
     name: "Marketplace",
     href: "/marketplace",
     icon: ShoppingBagIcon,
-    active: false,
   },
-  { name: "Inventory", href: "/inventory", icon: Package, active: false },
-  { name: "Support", href: "/leaderboard", icon: Headset, active: false },
+  { name: "Inventory", href: "/inventory", icon: Package },
+  { name: "Support", href: "/support", icon: Headset },
 ];
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  const activeStyle = "border-r-[1rem] border-[#6739B7]";
 
   return (
     <>
@@ -47,47 +49,39 @@ export function Sidebar() {
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:relative lg:translate-x-0 transition duration-200 ease-in-out lg:flex lg:flex-col lg:justify-between`}
       >
-        <div className="flex flex-col h-full w-64 bg-[#121212] border-r overflow-y-auto">
+        <div className="flex flex-col h-full w-full bg-[#121212] border-r overflow-y-auto">
           <nav className="flex-1">
             <ul className="space-y-2">
-              {navItems.map((item) => (
-                <li
-                  key={item.name}
-                  className={`text-white 
-                    ${item.active ? "border-r-[1rem] border-[#6739B7]" : ""}`}
-                >
-                  <Link
-                    href={item.href}
-                    className={`flex items-center p-3 w-full rounded`}
-                    style={{
-                      width: "218px",
-                      height: "60px",
-                      fontFamily: "Impact",
-                      fontStyle: "normal",
-                      fontSize: "20px",
-                      lineHeight: "24px",
-                      color: "#FFFFFF",
-                      flex: "none",
-                      order: 0,
-                      alignSelf: "stretch",
-                      flexGrow: 0,
-                    }}
-                    onClick={() => {
-                      navItems.forEach((navItem) => {
-                        navItem.active = navItem.name === item.name;
-                      });
-                    }}
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <li
+                    key={item.name}
+                    className={`text-white ${isActive ? activeStyle : ""}`}
                   >
-                    <item.icon className="w-6 h-6 mr-4" />
-                    {item.name}
-                    <span
-                      className={` ${
-                        item.active ? "border-r-[1rem] border-[#6739B7]" : ""
-                      }`}
-                    ></span>
-                  </Link>
-                </li>
-              ))}
+                    <Link
+                      href={item.href}
+                      className={`flex items-center p-3 w-full rounded hover:bg-[#1f1f1f] transition-colors`}
+                      style={{
+                        width: "218px",
+                        height: "60px",
+                        fontFamily: "Impact",
+                        fontStyle: "normal",
+                        fontSize: "20px",
+                        lineHeight: "24px",
+                        color: "#FFFFFF",
+                        flex: "none",
+                        order: 0,
+                        alignSelf: "stretch",
+                        flexGrow: 0,
+                      }}
+                    >
+                      <item.icon className="w-6 h-6 mr-4" />
+                      {item.name}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
         </div>

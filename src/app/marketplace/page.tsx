@@ -1,59 +1,103 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { CouponCard } from "@/components/CouponCard";
+import { useUser } from "@/context/user";
+import { useState, useEffect } from "react";
 
-import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import { useState } from "react";
+interface CouponData {
+  item_id: number;
+  available_instances: number;
+  marketplace_ids: number[];
+  points_to_redeem: number;
+  gameId: number;
+  archived: boolean;
+  itemName: string;
+  itemType: string;
+  itemValue: string[] | null;
+  extraDetails: {
+    description: string;
+    points_to_redeem: string | number;
+  };
+}
 
 export default function Marketplace() {
-  const items = [
-    {
-      id: 1,
-      name: "Pubg 600 UC",
-      price: 1000,
-      originalPrice: 500,
-      discount: "60% off",
-      expiresIn: "2 days",
-      image: "/images/valorant.png",
-      boughtBy: 200,
-    },
-    {
-      id: 2,
-      name: "Fortnite 1000 V Bucks",
-      price: 200,
-      originalPrice: 500,
-      discount: "60% off",
-      expiresIn: "2 days",
-      image: "/images/valorant.png",
-      boughtBy: 200,
-    },
-    {
-      id: 3,
-      name: "Valorant 600 Points",
-      price: 500,
-      originalPrice: 500,
-      discount: "60% off",
-      image: "/images/valorant.png",
-      expiresIn: "1 days",
-      boughtBy: 200,
-    },
-  ];
-  const [activeTab, setActiveTab] = useState("description");
-  const [filter, setFilter] = useState("");
+  const [coupons, setCoupons] = useState<CouponData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string>("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [filter, setFilter] = useState<number>(0);
+  const { userData, setUserData } = useUser();
 
-  const filteredItems = [...items].sort((a, b) => {
-    if (filter === "price") return a.price - b.price;
-    if (filter === "popularity") return b.boughtBy - a.boughtBy;
-    if (filter === "expiry")
-      return parseInt(a.expiresIn) - parseInt(b.expiresIn);
-    return 0;
-  });
+  useEffect(() => {
+    async function fetchCoupons() {
+      try {
+        const response = await fetch("/api/marketplace/getAllCoupons");
+        if (!response.ok) {
+          throw new Error("Failed to fetch coupons");
+        }
+        const data = await response.json();
+        setCoupons(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    }
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch("/api/user/getUserInfo");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const data = await response.json();
+        setUserData(data);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError("Failed to load user data");
+      }
+    };
+
+    fetchUserInfo();
+    fetchCoupons();
+  }, [setUserData]);
+
+  const filteredCoupons = () => {
+    if (filter === 0) return coupons;
+    return coupons.filter((coupon) => coupon.gameId === filter);
+  };
+
+  const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilter(Number(event.target.value));
+  };
+
+  const filterOptions = {
+    1: "Dota 2",
+    2: "Valorant",
+    3: "COD Warzone",
+    4: "PUBG",
+    5: "Fall Guys",
+    6: "Fortnite",
+    7: "Hearthstone",
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white p-6 flex items-center justify-center">
+        <div className="text-xl">Loading coupons...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white p-6 flex items-center justify-center">
+        <div className="text-xl text-red-500">Error: {error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="flex justify-between items-center mb-6">
@@ -68,171 +112,48 @@ export default function Marketplace() {
         >
           Marketplace
         </h1>
-        <div className="border border-gray-600 rounded-md px-4 py-2 cursor-pointer">
-          <span>Filter</span>
-          <select
-            className="bg-black text-white ml-2"
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="">None</option>
-            <option value="price">By Price</option>
-            <option value="popularity">By Popularity</option>
-            <option value="expiry">By Expiry Date</option>
-          </select>
+        <div>
+          <div className="m-2 ml-0">Balance: {userData?.balance} 🪙</div>
+          <div className="border border-gray-600 rounded-md px-4 py-2 cursor-pointer">
+            <span>Filter</span>
+            <select
+              className="bg-black text-white ml-2"
+              onChange={handleFilterChange}
+              value={filter}
+            >
+              <option value={0}>No filter</option>
+              {Object.entries(filterOptions).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
+      {showSuccess && (
+        <div className="mb-4 p-4 bg-green-500 text-white rounded">
+          {successMessage}
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredItems.map((item) => (
-          <div key={item.id} className="bg-[#222222] p-4 rounded-lg shadow-lg">
-            <Image
-              src={item.image}
-              alt={item.name}
-              width={300}
-              height={200}
-              className="rounded-md"
-            />
-            <h2
-              className="text-lg font-semibold mt-2"
-              style={{
-                fontFamily: " Impact",
-                fontWeight: "400",
-                fontSize: "20px",
+        {filteredCoupons().map((coupon) => {
+          return (
+            <CouponCard
+              key={coupon.item_id}
+              itemId={coupon.item_id}
+              name={coupon.itemName}
+              description={JSON.parse(coupon.extraDetails as unknown as string).description}
+              points={coupon.points_to_redeem}
+              gameId={coupon.gameId}
+              availableInstances={coupon.available_instances}
+              onSuccess={(message) => {
+                setSuccessMessage(message);
+                setShowSuccess(true);
               }}
-            >
-              {item.name}
-            </h2>
-            <div className="flex items-center mt-1">
-              <span className="text-yellow-400 font-bold">🪙 {item.price}</span>
-              <span className="text-gray-300 line-through ml-2">
-                {item.originalPrice}
-              </span>
-              <span className="bg-red-600 text-white text-sm px-1 py-0 ml-2">
-                {item.discount}
-              </span>
-            </div>
-            <p className="text-sm text-red-400 mt-2">
-              Expires in {item.expiresIn}
-            </p>
-            <p className="text-sm text-gray-300">
-              Bought by {item.boughtBy} people today
-            </p>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="w-full bg-gradient-to-r from-[#692CCD] to-[#B87FF6] text-white font-bold py-2 mt-4 hover:opacity-90">
-                  Buy Now
-                </Button>
-              </DialogTrigger>
-              <DialogContent
-                className="bg-[#3D3D3D] text-white max-w-xs sm:max-w-md  
-    sm:mb-10 mt-0 overflow-auto"
-              >
-                <div className="relative w-full flex items-center justify-center">
-                  <Image
-                    style={{ width: "380px" }}
-                    src="/images/valorant.png"
-                    alt="Valorant 600 Points"
-                    width={500}
-                    height={250}
-                  />
-                </div>
-
-                <h2
-                  className="sm:text-[20px] font-bold mt-1 text-center sm:text-left"
-                  style={{
-                    fontFamily: "Impact",
-                    fontWeight: "400",
-                    fontSize: "25px",
-                  }}
-                >
-                  Valorant 600 Points
-                </h2>
-
-                <div className="flex flex-wrap items-center justify-center sm:justify-start mt-0 text-center sm:text-left">
-                  <span
-                    className="text-yellow-400 font-bold"
-                    style={{ fontSize: "16px" }}
-                  >
-                    🪙 200
-                  </span>
-                  <span className="text-gray-400 line-through ml-2 text-sm">
-                    500
-                  </span>
-                  <span className="bg-red-600 text-white text-sm px-2 py-0 ml-2">
-                    60% off
-                  </span>
-                </div>
-
-                <div className="flex justify-center sm:justify-start mt-0 border-b border-gray-600">
-                  <button
-                    style={{
-                      fontFamily: "Impact",
-                      fontWeight: "400",
-                      fontSize: "20px",
-                    }}
-                    className={`px-4 py-2 text-sm font-medium ${
-                      activeTab === "description"
-                        ? "text-purple-400 border-b-2 border-purple-400"
-                        : "text-gray-400"
-                    }`}
-                    onClick={() => setActiveTab("description")}
-                  >
-                    Description
-                  </button>
-                  <button
-                    style={{
-                      fontFamily: "Impact",
-                      fontWeight: "400",
-                      fontSize: "20px",
-                    }}
-                    className={`px-4 py-2 text-sm font-medium ${
-                      activeTab === "how-to-redeem"
-                        ? "text-purple-400 border-b-2 border-purple-400"
-                        : "text-gray-400"
-                    }`}
-                    onClick={() => setActiveTab("how-to-redeem")}
-                  >
-                    How To Redeem
-                  </button>
-                </div>
-
-                {activeTab === "description" && (
-                  <p
-                    className="text-gray-300 mt-0 text-center sm:text-left"
-                    style={{
-                      fontFamily: "Poppins",
-                      fontWeight: "100",
-                      fontSize: "16px",
-                      color: "#C6C6C6",
-                    }}
-                  >
-                    Valorant is a very competitive game, and it has a large and
-                    active esports scene. The game is also very popular among
-                    casual players.
-                  </p>
-                )}
-                {activeTab === "how-to-redeem" && (
-                  <p className="text-gray-300 mt-0 text-center sm:text-left">
-                    Use the code sent in your inbox
-                  </p>
-                )}
-
-                <p className="mt-1 text-gray-50 text-center sm:text-left">
-                  The code will be sent to the following email ID
-                </p>
-                <Input
-                  defaultValue="jakejonas@gmail.com"
-                  className="mt-0 p-2 rounded bg-gray-700 text-white w-full"
-                />
-
-                <DialogFooter>
-                  <Button className="w-full bg-gradient-to-r from-[#692CCD] to-[#B87FF6] text-white font-bold py-2 mt-4 hover:opacity-90">
-                    Claim Now
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-        ))}
+            />
+          );
+        })}
       </div>
     </div>
   );
