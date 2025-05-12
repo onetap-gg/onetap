@@ -8,6 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useUser } from "@/context/user";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
@@ -34,6 +35,7 @@ export default function Marketplace() {
   const [successMessage, setSuccessMessage] = useState<string>("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [filter, setFilter] = useState<number>(0);
+  const { userData, setUserData } = useUser();
 
   useEffect(() => {
     async function fetchCoupons() {
@@ -50,7 +52,23 @@ export default function Marketplace() {
         setLoading(false);
       }
     }
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch("/api/user/getUserInfo");
 
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const data = await response.json();
+        setUserData(data);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError("Failed to load user data");
+      }
+    };
+
+    fetchUserInfo();
     fetchCoupons();
   }, []);
 
@@ -103,20 +121,23 @@ export default function Marketplace() {
         >
           Marketplace
         </h1>
-        <div className="border border-gray-600 rounded-md px-4 py-2 cursor-pointer">
-          <span>Filter</span>
-          <select
-            className="bg-black text-white ml-2"
-            onChange={handleFilterChange}
-            value={filter}
-          >
-            <option value={0}>No filter</option>
-            {Object.entries(filterOptions).map(([key, value]) => (
-              <option key={key} value={key}>
-                {value}
-              </option>
-            ))}
-          </select>
+        <div>
+          <div className="m-2 ml-0">Balance: {userData?.balance} 🪙</div>
+          <div className="border border-gray-600 rounded-md px-4 py-2 cursor-pointer">
+            <span>Filter</span>
+            <select
+              className="bg-black text-white ml-2"
+              onChange={handleFilterChange}
+              value={filter}
+            >
+              <option value={0}>No filter</option>
+              {Object.entries(filterOptions).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
       {showSuccess && (
@@ -131,7 +152,7 @@ export default function Marketplace() {
               key={coupon.item_id}
               itemId={coupon.item_id}
               name={coupon.itemName}
-              description={coupon.extraDetails?.description}
+              description={JSON.parse(coupon.extraDetails as unknown as string).description}
               points={coupon.points_to_redeem}
               gameId={coupon.gameId}
               availableInstances={coupon.available_instances}

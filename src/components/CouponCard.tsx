@@ -6,7 +6,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
+import { useUser } from "@/context/user";
 import { useState } from "react";
 
 interface CouponCardProps {
@@ -30,12 +30,66 @@ export const CouponCard = ({
 }: CouponCardProps) => {
   const [activeTab, setActiveTab] = useState("description");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isRedeeming, setIsRedeeming] = useState(false);
+  const { userData } = useUser();
+
+  const handleClaim = async () => {
+    try {
+      setError(null);
+      setIsRedeeming(true);
+
+      if (!userData) {
+        setError("Please log in to redeem coupons");
+        return;
+      }
+
+      if (availableInstances <= 0) {
+        setError("This coupon is currently sold out");
+        return;
+      }
+
+      if (userData.balance < points) {
+        setError("Insufficient balance to redeem this coupon");
+        return;
+      }
+
+      const response = await fetch("/api/marketplace/redeemCoupon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          itemId,
+          points,
+          userId: userData.id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to redeem coupon");
+      }
+
+      onSuccess(`Successfully redeemed ${name} for ${points} points!`);
+      setIsModalOpen(false);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred while redeeming the coupon"
+      );
+    } finally {
+      setIsRedeeming(false);
+    }
+  };
 
   return (
-    <div className="rounded bg-[#222222] w-[15rem] min-h-[40vh] flex flex-col justify-between">
+    <div className="rounded bg-[#222222] w-[14rem] min-h-[40vh] flex flex-col justify-between">
       <div className="flex">
         <div className="p-2">
-          <img className="" src={`/images/${gameId}.png`} alt="" />
+          <img className="" src={`/images/${gameId}.png`} alt={name} />
           <p className="text-2xl font-Impact">{points} Points</p>
         </div>
       </div>
@@ -43,25 +97,26 @@ export const CouponCard = ({
         <h2>{name}</h2>
         <p>{description}</p>
         <div>
-          <Button onClick={() => setIsModalOpen(true)} className="w-full">
-            Redeem Now
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            className="w-full"
+            disabled={availableInstances <= 0}
+          >
+            {availableInstances <= 0 ? "Sold Out" : "Redeem Now"}
           </Button>
         </div>
       </div>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="bg-[#3D3D3D] text-white max-w-xs sm:max-w-md sm:mb-10 mt-0 overflow-auto">
           <div className="relative w-full flex items-center justify-center">
-            <Image
-              style={{ width: "380px" }}
+            <img
               src={`/images/${gameId}.png`}
               alt={name}
-              width={500}
-              height={250}
+              className="max-w-[250px] max-h-[250px]"
             />
           </div>
-
           <DialogTitle
-            className="sm:text-[20px] font-bold mt-1 text-center sm:text-left"
+            className="sm:text-[20px] font-bold text-center sm:text-left"
             style={{
               fontFamily: "Impact",
               fontWeight: "400",
@@ -87,7 +142,7 @@ export const CouponCard = ({
                 fontWeight: "400",
                 fontSize: "20px",
               }}
-              className={`px-4 py-2 text-sm font-medium ${
+              className={`px-4 text-sm font-medium ${
                 activeTab === "description"
                   ? "text-purple-400 border-b-2 border-purple-400"
                   : "text-gray-400"
@@ -102,7 +157,7 @@ export const CouponCard = ({
                 fontWeight: "400",
                 fontSize: "20px",
               }}
-              className={`px-4 py-2 text-sm font-medium ${
+              className={`px-4 text-sm font-medium ${
                 activeTab === "how-to-redeem"
                   ? "text-purple-400 border-b-2 border-purple-400"
                   : "text-gray-400"
@@ -117,7 +172,7 @@ export const CouponCard = ({
             <p
               className="text-gray-300 mt-0 text-center sm:text-left"
               style={{
-                fontFamily: "Poppins",
+                fontFamily: "sans-serif",
                 fontWeight: "100",
                 fontSize: "16px",
                 color: "#C6C6C6",
@@ -132,25 +187,24 @@ export const CouponCard = ({
             </p>
           )}
 
-          <p className="text-gray-300 mt-4">
+          <p className="text-gray-500">
             The code will be sent to the following email ID
           </p>
           <Input
-            defaultValue="jakejonas@gmail.com"
+            defaultValue={userData?.email || ""}
+            disabled
             className="mt-0 p-2 rounded bg-gray-700 text-white w-full"
           />
 
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
           <DialogFooter>
             <Button
-              className="w-full bg-gradient-to-r from-[#692CCD] to-[#B87FF6] text-white font-bold py-2 mt-4 hover:opacity-90"
-              onClick={() => {
-                onSuccess(
-                  `Successfully redeemed ${name} for ${points} points!`
-                );
-                setIsModalOpen(false);
-              }}
+              className="w-full bg-gradient-to-r from-[#692CCD] to-[#B87FF6] text-white font-bold hover:opacity-90"
+              onClick={handleClaim}
+              disabled={isRedeeming}
             >
-              Claim Now
+              {isRedeeming ? "Processing..." : "Claim Now"}
             </Button>
           </DialogFooter>
         </DialogContent>

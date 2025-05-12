@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState, useEffect } from "react";
 
 interface UserData {
   id: number;
@@ -48,7 +48,23 @@ const defaultUser: UserData = {
 };
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [userData, setUserData] = useState<UserData | null>(defaultUser);
+  const [userData, setUserData] = useState<UserData | null>(() => {
+    // Try to get user data from localStorage on initial load
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("userData");
+      return storedUser ? JSON.parse(storedUser) : defaultUser;
+    }
+    return defaultUser;
+  });
+
+  // Update localStorage whenever userData changes
+  useEffect(() => {
+    if (userData) {
+      localStorage.setItem("userData", JSON.stringify(userData));
+    } else {
+      localStorage.removeItem("userData");
+    }
+  }, [userData]);
 
   const contextValue = useMemo(
     () => ({

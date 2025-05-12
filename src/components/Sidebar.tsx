@@ -26,7 +26,7 @@ const navItems = [
     icon: ShoppingBagIcon,
   },
   { name: "Inventory", href: "/inventory", icon: Package },
-  { name: "Support", href: "/leaderboard", icon: Headset },
+  { name: "Support", href: "/support", icon: Headset },
 ];
 
 export function Sidebar() {
