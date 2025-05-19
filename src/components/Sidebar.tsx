@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { GoHome } from "react-icons/go";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/context/user";
 
 const navItems = [
   { name: "Profile", href: "/", icon: GoHome },
@@ -32,11 +33,14 @@ const navItems = [
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { isLoggedIn } = useUser();
 
   const activeStyle = "border-r-[1rem] border-[#6739B7]";
 
   return (
-    <>
+    <div
+      className={`${isLoggedIn ? "fixed left-0 top-[12vh] z-50" : "hidden"}`}
+    >
       <Button
         variant="outline"
         className="fixed top-4 left-4 z-50 lg:hidden"
@@ -49,7 +53,7 @@ export function Sidebar() {
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:relative lg:translate-x-0 transition duration-200 ease-in-out lg:flex lg:flex-col lg:justify-between`}
       >
-        <div className="flex flex-col h-full w-full bg-[#121212] border-r overflow-y-auto">
+        <div className="flex flex-col h-[100vh] w-full bg-[#121212] border-r overflow-y-auto">
           <nav className="flex-1">
             <ul className="space-y-2">
               {navItems.map((item) => {
@@ -86,6 +90,6 @@ export function Sidebar() {
           </nav>
         </div>
       </div>
-    </>
+    </div>
   );
 }

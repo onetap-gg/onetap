@@ -24,6 +24,8 @@ interface UserData {
 interface UserContextType {
   userData: UserData | null;
   setUserData: (data: UserData | null) => void;
+  isLoggedIn: boolean;
+  setIsLoggedIn: (isLoggedIn: boolean) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -48,11 +50,18 @@ const defaultUser: UserData = {
 };
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [userData, setUserData] = useState<UserData | null>(() => {
     // Try to get user data from localStorage on initial load
     if (typeof window !== "undefined") {
       const storedUser = localStorage.getItem("userData");
-      return storedUser ? JSON.parse(storedUser) : defaultUser;
+      if (storedUser) {
+        setIsLoggedIn(true);
+        return JSON.parse(storedUser);
+      } else {
+        setIsLoggedIn(false);
+        return defaultUser;
+      }
     }
     return defaultUser;
   });
@@ -61,8 +70,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (userData) {
       localStorage.setItem("userData", JSON.stringify(userData));
+      setIsLoggedIn(true);
     } else {
       localStorage.removeItem("userData");
+      setIsLoggedIn(false);
     }
   }, [userData]);
 
@@ -70,8 +81,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     () => ({
       userData,
       setUserData,
+      isLoggedIn,
+      setIsLoggedIn,
     }),
-    [userData]
+    [userData, isLoggedIn]
   );
 
   return (

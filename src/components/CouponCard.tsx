@@ -90,16 +90,16 @@ export const CouponCard = ({
       <div className="flex">
         <div className="p-2">
           <img className="" src={`/images/${gameId}.png`} alt={name} />
-          <p className="text-2xl font-Impact">{points} Points</p>
+          <p className="text-2xl font-[Impact]">{points} Points</p>
         </div>
       </div>
       <div className="p-2">
         <h2>{name}</h2>
         <p>{description}</p>
-        <div>
+        <div className="mt-3">
           <Button
             onClick={() => setIsModalOpen(true)}
-            className="w-full"
+            className="w-full bg-linear-to-r border-solid border-[1px] border-[#9D9D9D] from-[#692CCD] to-[#B87FF6]"
             disabled={availableInstances <= 0}
           >
             {availableInstances <= 0 ? "Sold Out" : "Redeem Now"}
