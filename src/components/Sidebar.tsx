@@ -37,10 +37,12 @@ export function Sidebar() {
 
   const activeStyle = "border-r-[1rem] border-[#6739B7]";
 
+  if (!isLoggedIn) {
+    return null;
+  }
+
   return (
-    <div
-      className={`${isLoggedIn ? "fixed left-0 top-[12vh] z-50" : "hidden"}`}
-    >
+    <div className="fixed left-0 top-[12vh] z-50 ">
       <Button
         variant="outline"
         className="fixed top-4 left-4 z-50 lg:hidden"

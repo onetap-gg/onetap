@@ -15,14 +15,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const { isLoggedIn } = useUser();
 
   return (
-    <div className="h-screen bg-gray-100 lg:flex-row">
+    <div className="h-screen bg-gray-100">
       <Header />
       <div className="flex flex-1">
         <Sidebar />
         <main
-          className={`flex-1 ${
+          className={`flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-0 ${
             isLoggedIn ? "lg:ml-[218px] mt-[12vh]" : ""
-          } overflow-x-hidden overflow-y-auto bg-gray-100 p-0`}
+          }`}
         >
           {children}
         </main>

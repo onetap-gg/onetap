@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import signOut from "@/utils/supabase/logout";
 import { useUser } from "@/context/user";
+
 export function Header() {
   const router = useRouter();
   const { isLoggedIn, setIsLoggedIn } = useUser();
@@ -22,12 +23,12 @@ export function Header() {
     }
   };
 
+  if (!isLoggedIn) {
+    return null;
+  }
+
   return (
-    <header
-      className={`${
-        isLoggedIn ? "flex fixed top-0" : "hidden"
-      } items-center justify-between px-4 py-4 border-b border-[#6739B7] bg-[#020710] w-full h-[12vh]`}
-    >
+    <header className="flex fixed top-0 items-center justify-between px-4 py-4 border-b border-[#6739B7] bg-[#020710] w-full h-[12vh]">
       <div className="flex items-center gap-3 ml-4 h-[12vh]">
         <span
           className="text-2xl font-semibold inline-block font-[Ranchers]"
