@@ -86,17 +86,17 @@ export const CouponCard = ({
   };
 
   return (
-    <div className="rounded-[0.45rem] bg-[#222222] w-[14rem] min-h-[40vh] flex flex-col justify-between">
+    <div className="rounded-[0.45rem] bg-[#222222] w-[18rem] min-h-[40vh] flex flex-col justify-between">
       <div>
         <img
           className="rounded-t-[0.45rem]"
           src={`/images/${gameId}.png`}
           alt={name}
         />
-        <p className="text-xl font-[Impact] m-2">{name}</p>
-        <p className="ml-2">🪙{points} Points</p>
+        <p className="text-xl font-[Impact] m-2 ml-4">{name}</p>
+        <p className="ml-4">🪙{points} Points</p>
       </div>
-      <div className="p-2">
+      <div className="p-2 px-4">
         <p>{description}</p>
         <div className="m-3">
           <Button

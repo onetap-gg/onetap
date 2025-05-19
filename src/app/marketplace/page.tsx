@@ -100,9 +100,9 @@ export default function Marketplace() {
 
   return (
     <div className="min-h-screen bg-black text-white p-6 pl-10">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 ml-6">
         <h1
-          className="text-4xl font-bold pl-4"
+          className="text-4xl font-bold"
           style={{
             fontSize: "48px",
             fontFamily: "Impact",

@@ -50,7 +50,7 @@ const defaultUser: UserData = {
 };
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
   const [userData, setUserData] = useState<UserData | null>(() => {
     // Try to get user data from localStorage on initial load
     if (typeof window !== "undefined") {

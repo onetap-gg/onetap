@@ -10,19 +10,16 @@ export function Header() {
   const { isLoggedIn, setIsLoggedIn } = useUser();
 
   const handleLogout = async () => {
+    setIsLoggedIn(false);
     try {
       await signOut();
-      setIsLoggedIn(false);
-      if (typeof window !== "undefined") {
-        sessionStorage.clear();
-        localStorage.clear();
-        router.push("/login");
-      }
+      sessionStorage.clear();
+      localStorage.clear();
+      router.push("/login");
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
-
   if (!isLoggedIn) {
     return null;
   }
