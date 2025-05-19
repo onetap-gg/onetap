@@ -99,10 +99,10 @@ export default function Marketplace() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
+    <div className="min-h-screen bg-black text-white p-6 pl-10">
       <div className="flex justify-between items-center mb-6">
         <h1
-          className="text-4xl font-bold"
+          className="text-4xl font-bold pl-4"
           style={{
             fontSize: "48px",
             fontFamily: "Impact",
@@ -143,7 +143,9 @@ export default function Marketplace() {
               key={coupon.item_id}
               itemId={coupon.item_id}
               name={coupon.itemName}
-              description={JSON.parse(coupon.extraDetails as unknown as string).description}
+              description={
+                JSON.parse(coupon.extraDetails as unknown as string).description
+              }
               points={coupon.points_to_redeem}
               gameId={coupon.gameId}
               availableInstances={coupon.available_instances}

@@ -86,20 +86,22 @@ export const CouponCard = ({
   };
 
   return (
-    <div className="rounded bg-[#222222] w-[14rem] min-h-[40vh] flex flex-col justify-between">
-      <div className="flex">
-        <div className="p-2">
-          <img className="" src={`/images/${gameId}.png`} alt={name} />
-          <p className="text-2xl font-[Impact]">{points} Points</p>
-        </div>
+    <div className="rounded-[0.45rem] bg-[#222222] w-[14rem] min-h-[40vh] flex flex-col justify-between">
+      <div>
+        <img
+          className="rounded-t-[0.45rem]"
+          src={`/images/${gameId}.png`}
+          alt={name}
+        />
+        <p className="text-xl font-[Impact] m-2">{name}</p>
+        <p className="ml-2">🪙{points} Points</p>
       </div>
       <div className="p-2">
-        <h2>{name}</h2>
         <p>{description}</p>
-        <div className="mt-3">
+        <div className="m-3">
           <Button
             onClick={() => setIsModalOpen(true)}
-            className="w-full bg-linear-to-r border-solid border-[1px] border-[#9D9D9D] from-[#692CCD] to-[#B87FF6]"
+            className="w-full rounded-[0.45rem] bg-linear-to-r border-solid border-[1px] border-[#9D9D9D] from-[#692CCD] to-[#B87FF6]"
             disabled={availableInstances <= 0}
           >
             {availableInstances <= 0 ? "Sold Out" : "Redeem Now"}

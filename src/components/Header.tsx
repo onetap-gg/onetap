@@ -26,10 +26,9 @@ export function Header() {
   if (!isLoggedIn) {
     return null;
   }
-
   return (
-    <header className="flex fixed top-0 items-center justify-between px-4 py-4 border-b border-[#6739B7] bg-[#020710] w-full h-[12vh]">
-      <div className="flex items-center gap-3 ml-4 h-[12vh]">
+    <header className="flex flex-1 fixed top-0 items-center justify-between px-4 py-4 border-b border-[#6739B7] bg-[#020710] w-full h-[12vh]">
+      <div className="flex items-center gap-3 ml-4">
         <span
           className="text-2xl font-semibold inline-block font-[Ranchers]"
           style={{
